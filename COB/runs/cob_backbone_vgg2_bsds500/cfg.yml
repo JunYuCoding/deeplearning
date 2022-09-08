@@ -1,0 +1,15 @@
+aug_n_angles: 4
+batch_size: 16
+cp_period: 1
+cuda: true
+decay: 0.0002
+epochs: 10
+epochs_div_lr: 6
+epochs_pre: 8
+lr: 0.0001
+momentum: 0.9
+n_ims_test: 10
+root_imgs: /root/hjy_pro/COB/BSDS500/data/images
+root_segs: /root/hjy_pro/COB/BSDS500/data/groundTruth
+run_path: /root/hjy_pro/COB/runs/cob_bsds500
+v: false

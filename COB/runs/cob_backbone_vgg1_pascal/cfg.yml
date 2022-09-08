@@ -1,0 +1,15 @@
+aug_n_angles: 4
+batch_size: 16
+cp_period: 1
+cuda: true
+decay: 0.0002
+epochs: 10
+epochs_div_lr: 6
+epochs_pre: 8
+lr: 0.0001
+momentum: 0.9
+n_ims_test: 10
+root_imgs: pascal-voc/VOC2012
+root_segs: trainval/trainval
+run_path: runs/cob_backbone_vgg1_pascal
+v: false

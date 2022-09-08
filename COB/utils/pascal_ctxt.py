@@ -8,8 +8,7 @@ import scipy.io as io
 import matplotlib.pyplot as plt
 import glob
 
-from .dataloader import *
-
+#from dataloader import *
 
 class pascalVOCContextLoader:
     """Data loader for the Pascal VOC semantic segmentation dataset.
@@ -84,36 +83,45 @@ class pascalVOCContextLoader:
 
 
 if __name__ == "__main__":
-
-    root_path = '/home/ubelix/lejeune/data'
+    # pass
+    #
+    root_path = '/root/hjy_pro/COB'
     dl = pascalVOCContextLoader(root_imgs=pjoin(root_path, 'pascal-voc',
                                                 'VOC2012'),
-                                root_segs=pjoin(root_path, 'trainval'))
-
+                                root_segs=pjoin(root_path, 'trainval/trainval'))
+    '''
+    print(len(dl))
+    print(dl[0]) #{}
     c = [0, 0]
     r = 1
     npts = 1000
     theta = np.linspace(0, 2 * np.pi, npts)
     x = c[0] + np.cos(theta)
     y = c[1] + np.sin(theta)
-
+    
     x_interp, y_interp = contours_to_pts(x, y, n_pts=30)
     angles = segments_to_angles(x_interp, y_interp)
     bins = bin_angles(angles)
 
     plt.plot(x, y)
-    for i in range(x_interp.shape[0] - 1):
-        plt.plot((x_interp[i], x_interp[i + 1]),
-                 (y_interp[i], y_interp[i + 1]),
-                 linewidth=4,
-                 color=plt.cm.RdYlBu(bins[i] / bins.max()))
-    plt.plot(x_interp, y_interp, 'ro')
-    plt.grid()
-    plt.show()
-
-    im, lbl = dl[0]
-    plt.subplot(121)
-    plt.imshow(im)
-    plt.subplot(122)
-    plt.imshow(lbl)
-    plt.show()
+    # for i in range(x_interp.shape[0] - 1):
+    #     plt.plot((x_interp[i], x_interp[i + 1]),
+    #              (y_interp[i], y_interp[i + 1]),
+    #              linewidth=4,
+    #              color=plt.cm.RdYlBu(bins[i] / bins.max()))
+    # plt.plot(x_interp, y_interp, 'ro')
+    # plt.grid()
+    # plt.show()
+    #
+    for d in dl:
+        im, lbl, name = d.values()
+        if name in ['2009_001224','2009_001251','2009_001271','2009_001329']:
+            print(name)
+            print(im.shape) # h w 3
+            print(lbl.shape)# h w
+            plt.subplot(121)
+            plt.imshow(im)
+            plt.subplot(122)
+            plt.imshow(lbl)
+            plt.show()
+    '''

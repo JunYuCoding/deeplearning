@@ -297,7 +297,7 @@ def train(cfg, model, device, dataloaders, run_path, writer):
         val(model, dataloaders['val'], device, mode, writer, epoch)
 
 
-# os.environ['CUDA_VISIBLE_DEVICES'] = '7'
+
 def main(cfg):
 
     if (not os.path.exists(cfg.run_path)):
@@ -352,12 +352,33 @@ def main(cfg):
     train(cfg, model, device, dataloaders, cfg.run_path, writer)
 
     return model
-
-
+# use gpu id = 6 total [0-7]
+os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 if __name__ == "__main__":
-
+    # --root-imgs /root/hjy_pro/RCF/data/HED-BSDS --root-segs /root/hjy_pro/COB/trainval_bsds/trainval_bsds --run-path /root/hjy_pro/COB/runs/cob_bsds --cuda
     p = params.get_params()
+    # python train.py --root-imgs <root>/pascal-voc/VOC2012 --root-segs <root>/trainval --run-path <root>/runs/cob --cuda
 
+    # change bsds500 dataset use python train.py --root-imgs /root/hjy_pro/COB/BSDS500/data/images --root-segs /root/hjy_pro/COB/BSDS500/data/groundTruth --run-path /root/hjy_pro/COB/runs/cob_bsds500 --cuda
+    ''' how to train
+    # train backbone_resnet with dataset pascal use  (this is origin author use)
+    # python train.py --root-imgs pascal-voc/VOC2012 --root-segs trainval/trainval --run-path runs/cob_backbone_resnet_pascal --cuda     ok
+   
+    # train backbone_resnet with dataset bsds500 use
+    # python train.py --root-imgs BSDS500/data/images --root-segs BSDS500/data/groundTruth --run-path runs/cob_backbone_resnet_bsds500 --cuda  ok
+    
+    # train backbone_vgg1 with dataset pascal use
+    # python train.py --root-imgs pascal-voc/VOC2012 --root-segs trainval/trainval --run-path runs/cob_backbone_vgg1_pascal --cuda   ok
+    
+    # train backbone_vgg1 with dataset bsds500 use
+    # python train.py --root-imgs BSDS500/data/images --root-segs BSDS500/data/groundTruth --run-path runs/cob_backbone_vgg1_bsds500 --cuda  ok no nan bug
+    
+    # train backbone_vgg2 with dataset pascal use
+    # python train.py --root-imgs pascal-voc/VOC2012 --root-segs trainval/trainval --run-path runs/cob_backbone_vgg2_pascal --cuda  ok
+    
+    # train backbone_vgg2 with dataset bsds500 use
+    # python train.py --root-imgs BSDS500/data/images --root-segs BSDS500/data/groundTruth --run-path runs/cob_backbone_vgg2_bsds500 --cuda  ok
+    '''
     p.add('--root-imgs', required=True)
     p.add('--root-segs', required=True)
     p.add('--run-path', required=True)

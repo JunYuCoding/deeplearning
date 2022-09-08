@@ -13,14 +13,15 @@ from scipy.interpolate import interp1d
 from sklearn.metrics import pairwise_distances_argmin_min
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
-
+# this is bsda500 dataloader
 from .augmenters import Normalize, rescale_augmenter
-from .pascal_ctxt import pascalVOCContextLoader
 
+from .bsds_ctxt import  BSDS500Loader
 
 def interpolate_to_polygon(arr, n_pts=10000, n_bins=8):
     # arr is an integer array
     contours = np.zeros(arr.shape)
+
     for c in np.unique(arr):
         arr_ = arr == c
         # label = measure.label(arr_)
@@ -110,7 +111,6 @@ def bin_angles(angles, n_bins=8):
     inds[inds == n_bins] = 0
     return inds
 
-
 class CobDataLoader(Dataset):
     def __init__(self,
                  root_imgs,
@@ -126,7 +126,8 @@ class CobDataLoader(Dataset):
 
         self.root_segs = root_segs
         self.root_imgs = root_imgs
-        self.dl = pascalVOCContextLoader(root_imgs, root_segs, split=split)
+        #self.dl = pascalVOCContextLoader(root_imgs, root_segs, split=split)
+        self.dl = BSDS500Loader(root_imgs, root_segs, split=split)
 
         self.reshaper = iaa.Noop()
         self.augmentations = iaa.Noop()
@@ -148,16 +149,18 @@ class CobDataLoader(Dataset):
 
     def prepare_all(self):
         if (not os.path.exists(self.or_cntr_path)):
-            os.makedirs(self.or_cntr_path)
+            #os.makedirs(self.or_cntr_path)
             print('preparing orientation maps to {}'.format(self.or_cntr_path))
 
-            dl = pascalVOCContextLoader(self.root_imgs, self.root_segs)
+            #dl = pascalVOCContextLoader(self.root_imgs, self.root_segs)
+            dl = BSDS500Loader(self.root_imgs, self.root_segs)
             for s in dl.splits: # train val test
                 dl.split = s
                 for ii in tqdm(range(len(dl))):
                     s = dl[ii]
                     or_cntr = interpolate_to_polygon(s['labels']).astype(
                         np.uint8)
+                    # 行压缩格式Compressed Sparse Row (CSR)
                     or_cntr = sparse.csr_matrix(or_cntr)
                     sparse.save_npz(
                         pjoin(self.or_cntr_path, s['base_name'] + '.npz'), or_cntr)
@@ -187,7 +190,7 @@ class CobDataLoader(Dataset):
 
     @staticmethod
     def collate_fn(data):
-
+        # print(data[0]['image'].shape,'data')
         to_collate = ['image', 'or_cntr', 'cntr']
         out = dict()
         for k in data[0].keys():
@@ -225,18 +228,21 @@ if __name__ == "__main__":
         iaa.Rotate([11.25 * i for i in range(16)])
     ])
     # root_path = '/home/ubelix/lejeune/data'
-    root_path = ''
-    dl = CobDataLoader(root_imgs=pjoin(root_path, 'pascal-voc', 'VOC2012'),
-                       root_segs=pjoin(root_path, 'trainval'),
+    root_path = '/root/hjy_pro/COB'
+    dl = CobDataLoader(root_imgs=pjoin(root_path, 'BSDS500', 'data/images'),
+                       root_segs=pjoin(root_path, 'BSDS500', 'data/groundTruth'),
                        augmentations=transf)
     dl = DataLoader(dl, collate_fn=dl.collate_fn)
 
+    '''
     for d in dl:
         or_cntr = d['or_cntr'].detach().cpu().numpy().squeeze()
         im = d['image'].detach().cpu().numpy().squeeze()
-
+        # c * h * w -- hw c
+        print(im.shape)
         plt.subplot(121)
         plt.imshow(im)
         plt.subplot(122)
         plt.imshow(or_cntr)
         plt.show()
+    '''
